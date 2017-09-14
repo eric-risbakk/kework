@@ -12,28 +12,63 @@ __maintainer__ = "Eric Risbakk"
 __email__ = "e.risbakk@student.maastrichtuniversity.nl"
 
 DEBUG = False
+TEST = True
 
 # Push test.
 
 
-def online_mean_check(simple_array):
+def online_mean_3d(ndarray, axis):
     """
-    Meant to confirm that the online mean method works.
+    Finds the mean in a 3d ndarray along the specified (int) axis.
 
     Takes in the already complete array and finds the mean for it.
 
-    :param simple_array: A 1-dimensional array.
+    :param axis: Axis which we find the mean on.
+    :param ndarray: A 1-dimensional array.
     :return: Arithmetic mean of simpleArray
     """
-    if len(simple_array) < 2:
-        return simple_array
+
+    if len(ndarray) < 2:
+        return ndarray
     else:
-        mean = simple_array[0]
+
+        """
+        # Creating the ndarray which will be the mean.
+        dimensions = []
+        for i in range(ndarray.ndim):
+            if i == axis:
+                continue
+            dimensions.append(ndarray.shape[i])
+        m = np.zeros(dimensions)
+
+        # Getting the mean for all points, using some recursion!
+        tempAxis = 0
+
+         """
+
+        mean = ndarray[0]
         n = 1
-        for x in simple_array[1:]:
+        for x in ndarray[1:]:
             mean = online_mean_step(x, mean, n)
             n += 1
         return mean
+
+def recursive_truncation(mean, ndarray, currentAxis, axis):
+    # End-statement.
+    if currentAxis == ndarray.ndim:
+        return
+    # Skip this.
+    if currentAxis == axis:
+        recursive_truncation(mean, ndarray, currentAxis + 1, axis)
+
+    # Let's go depth first!
+    # Let's truncate this axis.
+    # TODO: FIGURE THIS OUT. IS IT EVEN POSSIBLE?
+    # TODO: MAYBE I SHOULD BE USING A TUPLE OR SOMETHING.
+    for i in range(ndarray.shape[axis]):
+
+
+
 
 
 def online_mean_step(new_element, mean, n):
@@ -48,45 +83,6 @@ def online_mean_step(new_element, mean, n):
     :return: The new mean.
     """
     return (mean * n + new_element) / (n + 1)
-
-
-def axis_mean_check(ndarray):
-    """
-    Checks the mean of the last axis of a 3d ndarray, using the regular rule for average.
-    :param ndarray: 3d ndarray
-    :return: a 2d ndarray average in the direction of the last axis.
-    """
-    if DEBUG:
-        print("axisMeanCheck begun.")
-    x = ndarray.shape[0]
-    y = ndarray.shape[1]
-    z = ndarray.shape[2]
-    if DEBUG:
-        print("Dimensions: ({} {} {})".format(x, y, z))
-
-    mean = np.zeros((x, y))
-
-    if DEBUG:
-        print("ndarray of zeroes created.")
-    if DEBUG:
-        print("Dimensions: ({} {})".format(mean.shape[0], mean.shape[1]))
-
-    if DEBUG:
-        print(mean)
-
-    for i in range(x):
-        for j in range(y):
-            for k in range(z):
-                if DEBUG:
-                    print("Dim({} {} {})".format(i, j, k))
-                mean[i, j] += ndarray[i, j, k]
-
-    if DEBUG:
-        print("Collapsed axis.")
-    if DEBUG:
-        print(mean)
-
-    return mean/z
 
 
 def axis_online_mean_check(a1):
@@ -116,7 +112,7 @@ def axis_online_mean_check(a1):
 
     for i in range(x):
         for j in range(y):
-            mean[i, j] = online_mean_check(a1[i, j, :])
+            mean[i, j] = online_mean_3d(a1[i, j, :])
 
     if DEBUG:
         print("End axisOnlineMeanCheck")
@@ -133,31 +129,31 @@ def get_avg(simple_array):
 
     return mean/len(simple_array)
 
+if TEST:
+    # First is rows, second is columns
+    a1 = npr.rand(2, 2, 2)
+    a1 *= 10
+    array_mean0 = np.mean(a1, axis=0)
+    array_mean1 = np.mean(a1, axis=1)
+    array_mean2 = np.mean(a1, axis=2)
 
-# First is rows, second is columns
-array = npr.rand(2, 2, 2)
-array *= 10
-array_mean0 = np.mean(array, axis=0)
-array_mean1 = np.mean(array, axis=1)
-array_mean2 = np.mean(array, axis=2)
+    print(a1)
+    print("\nMeans:")
 
-print(array)
-print("\nMeans:")
+    print("\n First axis:")
+    print(array_mean0)
+    print("\n Second axis:")
+    print(array_mean1)
+    print("\n Third axis:")
+    print(array_mean2)
 
-print("\n First axis:")
-print(array_mean0)
-print("\n Second axis:")
-print(array_mean1)
-print("\n Third axis:")
-print(array_mean2)
+    print("\nLet us attempt using axisMeanCheck.")
+    a_mean = axis_mean_check(a1)
+    print(a_mean)
 
-print("\nLet us attempt using axisMeanCheck.")
-a_mean = axis_mean_check(array)
-print(a_mean)
+    print("\nLet us attempt using axisOnlineMeanCheck.")
+    b_mean = axis_online_mean_check(a1)
+    print(b_mean)
+    print("Finished.")
 
-print("\nLet us attempt using axisOnlineMeanCheck.")
-b_mean = axis_online_mean_check(array)
-print(b_mean)
-print("Finished.")
-
-# End.
+    # End.
