@@ -2,11 +2,9 @@
 import scipy.stats as spstat
 import numpy as np
 import numpy.random as npr
-
-# From Robbert:
-# As input you have a 3d ndarray, where we would like to take the mean across the last axis:
-# numpy.mean(  my_data,   axis=2)
-# You can simulate it with some random data of 3d shape.
+import scipy.stats as spstat
+import numpy as np
+import numpy.random as npr
 
 __author__ = 'Eric Risbakk'
 __date__ = "2017-09-14"
