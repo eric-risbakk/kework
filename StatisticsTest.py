@@ -13,6 +13,8 @@ __email__ = "e.risbakk@student.maastrichtuniversity.nl"
 
 DEBUG = False
 
+# Push test.
+
 
 def online_mean_check(simple_array):
     """
