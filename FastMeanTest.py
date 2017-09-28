@@ -2,8 +2,7 @@
 import pyopencl as cl
 import numpy as np
 
-# TODO: Figure out what I need to make the bytes-like object, as opposed to an int.
-# TODO: Figure out how to deal with multiple outputs, as below.
+# TODO: Lol, a function has only one output by definition.
 
 # Experimental data.
 problems = 10  # Let a row correspond to a problem.
