@@ -6,10 +6,10 @@ import numpy as np
 TOL = 0.001  # Tolerance for floating point type comparisons
 
 # Experimental data.
-problems = 10  # Let a row correspond to a problem.
-data_points = 5  # Elements in each row.
+problems = 100  # Let a row correspond to a problem.
+data_points = 50  # Elements in each row.
 inp = np.random.rand(problems, data_points).astype(np.float32)  # input.
-out_mean = np.empty(problems).astype(np.float32) # Output
+out_mean = np.empty(problems).astype(np.float32)  # Output
 out_std = np.empty(problems).astype(np.float32)  # Output
 
 # The program. Finds the mean and standard deviance of the data from input.
@@ -27,7 +27,7 @@ kernel_source = """
             float value;
 
             for (uint i = 0; i < length; ++i) {
-                value = input[i];
+                value = input[i + gid*length];
                 delta = value - mean;
                 mean += delta/(i+1);
                 variance += delta*(value-mean);
