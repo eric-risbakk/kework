@@ -9,8 +9,8 @@ TOL = 0.001  # Tolerance for floating point type comparisons
 problems = 100  # Let a row correspond to a problem.
 data_points = 50  # Elements in each row.
 inp = np.random.rand(problems, data_points).astype(np.float32)  # input.
-out_mean = np.empty(problems).astype(np.float32)  # Output
-out_std = np.empty(problems).astype(np.float32)  # Output
+out_mean = np.zeros(problems, dtype=np.float32)  # Output
+out_std = np.zeros(problems, dtype=np.float32)  # Output
 
 # The program. Finds the mean and standard deviance of the data from input.
 kernel_source = """
@@ -56,13 +56,28 @@ queue = cl.CommandQueue(context)
 mem_flags = cl.mem_flags
 
 inp_buf = cl.Buffer(context, mem_flags.READ_ONLY | mem_flags.COPY_HOST_PTR, hostbuf=inp)
-mean_buf = cl.Buffer(context, mem_flags.WRITE_ONLY, out_mean.nbytes)
-std_buf = cl.Buffer(context, mem_flags.WRITE_ONLY, out_std.nbytes)
+# mean_buf = cl.Buffer(context, mem_flags.WRITE_ONLY, out_mean.nbytes)
+# std_buf = cl.Buffer(context, mem_flags.WRITE_ONLY, out_std.nbytes)
+mean_buf = cl.Buffer(context, mem_flags.WRITE_ONLY | mem_flags.USE_HOST_PTR, hostbuf=out_mean)
+std_buf = cl.Buffer(context, mem_flags.WRITE_ONLY | mem_flags.USE_HOST_PTR, hostbuf=out_std)
 
 fmt(queue, inp.shape, None, inp_buf, data_points, mean_buf, std_buf)
 
-cl.enqueue_copy(queue, out_mean, mean_buf)
-cl.enqueue_copy(queue, out_std, std_buf)
+# cl.enqueue_copy(queue, out_mean, mean_buf)
+# cl.enqueue_copy(queue, out_std, std_buf)
+# enqueue_map_buffer(queue, buf, flags, offset, shape, dtype, order="C", strides=None, wait_for=None, is_blocking=True)
+cl.enqueue_map_buffer(queue,
+                      buf=mean_buf,
+                      flags=cl.map_flags.READ,
+                      offset=0,
+                      shape=out_mean.shape,
+                      dtype=np.float32)
+cl.enqueue_map_buffer(queue,
+                      buf=std_buf,
+                      flags=cl.map_flags.READ,
+                      offset=0,
+                      shape=out_std.shape,
+                      dtype=np.float32)
 
 print("Let us compare values!")
 print("------------------------------------------------------")
