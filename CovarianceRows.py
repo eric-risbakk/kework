@@ -23,14 +23,14 @@ kernel_source = open('covariance_rows.cl').read()
 
 platform = cl.get_platforms()[0]
 
-device = platform.get_devices[0]
+device = platform.get_devices()[0]
 
 context = cl.Context([device])
 
 print("Building program.")
 program = cl.Program(context, kernel_source).build()
 fc = program.find_covariances
-fc.set_scalar_arg_dtypes(None, None, np.uint32, None)
+fc.set_scalar_arg_dtypes([None, None, np.uint32, None])
 
 queue = cl.CommandQueue(context)
 
@@ -47,28 +47,23 @@ cl.enqueue_map_buffer(queue, out_row_buf, cl.map_flags.READ, 0, out_row.shape, n
 print("Let us compare values!")
 print("----------------------------------------------")
 correct = 0
-print("Calculating covariances using naive method.")
-covariances = np.zeros(problems, dtype=np.float32)
+print("Calculating covariances using the numpy method.")
+np_cov = np.zeros(problems)
 
 for x in range(problems):
-    sum12 = 0;
-    sum1 = sum(row_1[x])
-    sum2 = sum(row_2[x])
-    tmp = 0;
-    for i, j in zip(row_1[x], row_2[x]):
-        sum12 = i*j
+    # Also checking numpy value.
+    np_cov[x] = np.cov([row_1[x], row_2[x]])[0, 1]
 
-    covariances[x] = (sum12 - sum1*sum2/problems)/problems
 
 print("Comparing covariance using online, opencl method, and naive python-only method.")
 for i in range(problems):
-    diff_cov = out_row[i] - covariances[i]
+    diff_cov = out_row[i] - np_cov[i]
     if diff_cov**2 < TOL**2:
         correct += 1
-    else:
-        print("Not alike! Element", i)
+    # else:
+        # print("Not alike! Element", i)
         print("\tDiff:", diff_cov)
-        print("\tOnline covariance:", out_row[i], "\tNaive covariance:", covariances[i])
+        print("\tOnline covariance:", out_row[i], "\tNumpy covariance:", np_cov[i])
 
 print("Correct:", correct, "out of", problems)
 

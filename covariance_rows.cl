@@ -17,17 +17,13 @@ void online_covariance(
     int n = 0;
     float dx;
 
-    for (int x = 0; x < length; ++x)
+    for (int i = 0; i < length; ++i)
     {
-        for (int y = 0; y < length; ++y)
-        {
-            dx = 0;
-            n += 1;
-            dx = row_1[x] - meanx;
-            meanx += dx / n
-            meany += (row_2[y] - meany)/n
-            c += dx*(row_2[y] - meany)
-        }
+        n += 1;
+        dx = row_1[i] - meanx;
+        meanx += dx / n;
+        meany += (row_2[i] - meany)/n;
+        c += dx*(row_2[i] - meany);
     }
 
     *row_out = c/n;
@@ -41,8 +37,8 @@ __kernel void find_covariances(
 )
 {
     // Set indices.
-    gid = get_global_id(0);
-    local float* inp_1_loc = row_1 + gid*length;
-    local float* inp_2_loc = row_2 + gid*length;
+    int gid = get_global_id(0);
+    global float* inp_1_loc = row_1 + gid*length;
+    global float* inp_2_loc = row_2 + gid*length;
     online_covariance(inp_1_loc, inp_2_loc, length, &row_out[gid]);
 }

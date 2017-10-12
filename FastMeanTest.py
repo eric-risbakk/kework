@@ -65,8 +65,8 @@ for i in range(problems):
     diff_s = out_std[i] - stds[i]
     if (diff_m**2 < TOL**2) & (diff_s**2 < TOL**2):
         correct += 1
-    else:
-        print("Not alike! Element:", i)
+    # else:
+        # print("Not alike! Element:", i)
         print("\tdiff_m", diff_m, "\tdiff_s", diff_s)
         print("\tmeans/out_mean (", means[i], "/", out_mean[i], ")")
         print("\tstds/out_std (", stds[i], "/", out_std[i])
