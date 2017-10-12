@@ -26,7 +26,7 @@ void online_covariance(
         c += dx*(row_2[i] - meany);
     }
 
-    *row_out = c/n;
+    *row_out = c/(n-1);
 }
 
 __kernel void find_covariances(

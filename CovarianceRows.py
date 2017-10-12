@@ -55,14 +55,14 @@ for x in range(problems):
     np_cov[x] = np.cov([row_1[x], row_2[x]])[0, 1]
 
 
-print("Comparing covariance using online, opencl method, and naive python-only method.")
+print("Comparing covariance using online OpenCL method, and Numpy method.")
 for i in range(problems):
     diff_cov = out_row[i] - np_cov[i]
     if diff_cov**2 < TOL**2:
         correct += 1
     # else:
         # print("Not alike! Element", i)
-        print("\tDiff:", diff_cov)
+        print("\n\tDiff:", diff_cov)
         print("\tOnline covariance:", out_row[i], "\tNumpy covariance:", np_cov[i])
 
 print("Correct:", correct, "out of", problems)
